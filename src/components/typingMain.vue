@@ -1,78 +1,402 @@
 <template>
-  <div class="hello">
-    <h1 id="subject"></h1>
-    <form name="typing" onsubmit="return false">
-      <input name="input" type="text" />
-      <input name="btn" type="submit" value="送信" />
+  <div class='hello'>
+    <h1 id='subject'></h1>
+    <form name='typing' @submit.prevent='check()'>
+      <input name='input' type='text' />
+      <input name='btn' type='submit' value='送信' />
     </form>
     <p></p>
-    <p id="timer">制限時間：10秒</p>
+    <p id='timer'>制限時間：5秒</p>
   </div>
 </template>
 
 <script>
 export default {
-  name: "typeingMain",
+  name: 'typeingMain',
   data() {
     return {
-      msg: "Welcome to Your Vue.js App"
-    };
+      rnd: 0,
+      target: {name: "", yomi: ""},
+      state: true,
+      form: null,
+      subject: null,
+      count: 0,
+      countdown: 0,
+      kanken3: [
+        {name: '哀哀父母', yomi: 'あいあいふぼ'},
+        {name: '哀糸豪竹', yomi: 'あいしごうちく'},
+        {name: '愛多憎生', yomi: 'あいたぞうせい'},
+        {name: '安穏無事', yomi: 'あんのんぶじ'},
+        {name: '衣冠盛事', yomi: 'いかんせいじ'},
+        {name: '衣冠束帯', yomi: 'いかんそくたい'},
+        {name: '意気自如', yomi: 'いきじじょ'},
+        {name: '意気衝天', yomi: 'いきしょうてん'},
+        {name: '意気揚揚', yomi: 'いきようよう'},
+        {name: '異端邪説', yomi: 'いたんじゃせつ'},
+        {name: '一栄一辱', yomi: 'いちえいいちじょく'},
+        {name: '一言芳恩', yomi: 'いちごんほうおん'},
+        {name: '一樹百穫', yomi: 'いちじゅひゃっかく'},
+        {name: '一諾千金', yomi: 'いちだくせんきん'},
+        {name: '一了百了', yomi: 'いちりょうひゃくりょう'},
+        {name: '一喜一憂', yomi: 'いっきいちゆう'},
+        {name: '一騎当千', yomi: 'いっきとうせん'},
+        {name: '一球入魂', yomi: 'いっきゅうにゅうこん'},
+        {name: '一虚一実', yomi: 'いっきょいちじつ'},
+        {name: '一酔千日', yomi: 'いっすいせんにち'},
+        {name: '一銭一厘', yomi: 'いっせんいちりん'},
+        {name: '一措一画', yomi: 'いっそいっかく'},
+        {name: '一超直入', yomi: 'いっちょうじきにゅう'},
+        {name: '一敗塗地', yomi: 'いっぱいとち'},
+        {name: '意到筆随', yomi: 'いとうひつずい'},
+        {name: '陰陰滅滅', yomi: 'いんいんめつめつ'},
+        {name: '有財餓鬼', yomi: 'うざいがき'},
+        {name: '運斤成風', yomi: 'うんきんせいふう'},
+        {name: '雲行雨施', yomi: 'うんこううし'},
+        {name: '雲散鳥没', yomi: 'うんさんちょうぼつ'},
+        {name: '雲翻雨覆', yomi: 'うんぽんうふく'},
+        {name: '栄華秀英', yomi: 'えいかしゅうえい'},
+        {name: '英華発外', yomi: 'えいかはつがい'},
+        {name: '栄枯盛衰', yomi: 'えいこせいすい'},
+        {name: '影隻形単', yomi: 'えいせきけいたん'},
+        {name: '英雄欺人', yomi: 'えいゆうぎじん'},
+        {name: '円孔方木', yomi: 'えんこうほうぼく'},
+        {name: '円転滑脱', yomi: 'えんてんかつだつ'},
+        {name: '延年転寿', yomi: 'えんねんてんじゅ'},
+        {name: '延陵季子', yomi: 'えんりょうのきし'},
+        {name: '遠慮近憂', yomi: 'えんりょきんゆう'},
+        {name: '応急措置', yomi: 'おうきゅうそち'},
+        {name: '屋上架屋', yomi: 'おくじょうかおく'},
+        {name: '温厚篤実', yomi: 'おんこうとくじつ'},
+        {name: '温良篤厚', yomi: 'おんりょうとっこう'},
+        {name: '海内無双', yomi: 'かいだいむそう'},
+        {name: '改頭換面', yomi: 'かいとうかんめん'},
+        {name: '怪力乱神', yomi: 'かいりきらんしん'},
+        {name: '河魚腹疾', yomi: 'かぎょのふくしつ'},
+        {name: '隔岸観火', yomi: 'かくがんかんか'},
+        {name: '佳人才子', yomi: 'かじんさいし'},
+        {name: '佳人薄命', yomi: 'かじんはくめい'},
+        {name: '割鶏牛刀', yomi: 'かっけいぎゅうとう'},
+        {name: '下陵上替', yomi: 'かりょうじょうたい'},
+        {name: '感慨無量', yomi: 'かんがいむりょう'},
+        {name: '緩歌慢舞', yomi: 'かんかまんぶ'},
+        {name: '緩急自在', yomi: 'かんきゅうじざい'},
+        {name: '換骨奪胎', yomi: 'かんこつだったい'},
+        {name: '冠婚葬祭', yomi: 'かんこんそうさい'},
+        {name: '冠前絶後', yomi: 'かんぜんぜつご'},
+        {name: '官尊民卑', yomi: 'かんそんみんぴ'},
+        {name: '寒暖饑飽', yomi: 'かんだんきほう'},
+        {name: '肝胆相照', yomi: 'かんたんそうしょう'},
+        {name: '管仲随馬', yomi: 'かんちゅうずいば'},
+        {name: '肝脳塗地', yomi: 'かんのうとち'},
+        {name: '気炎万丈', yomi: 'きえんばんじょう'},
+        {name: '奇奇怪怪', yomi: 'ききかいかい'},
+        {name: '規制緩和', yomi: 'きせいかんわ'},
+        {name: '奇怪千万', yomi: 'きっかいせんばん'},
+        {name: '喜怒哀楽', yomi: 'きどあいらく'},
+        {name: '季布一諾', yomi: 'きふのいちだく'},
+        {name: '脚下照顧', yomi: 'きゃっかしょうこ'},
+        {name: '九夏三伏', yomi: 'きゅうかさんぷく'},
+        {name: '牛刀割鶏', yomi: 'ぎゅうとうかっけい'},
+        {name: '器用貧乏', yomi: 'きようびんぼう'},
+        {name: '虚往実帰', yomi: 'きょおうじっき'},
+        {name: '挙棋不定', yomi: 'きょきふてい'},
+        {name: '虚気平心', yomi: 'きょきへいしん'},
+        {name: '虚虚実実', yomi: 'きょきょじつじつ'},
+        {name: '虚実皮膜', yomi: 'きょじつひまく'},
+        {name: '挙措失当', yomi: 'きょそしっとう'},
+        {name: '挙措進退', yomi: 'きょそしんたい'},
+        {name: '岐路亡羊', yomi: 'きろぼうよう'},
+        {name: '勤倹力行', yomi: 'きんけんりっこう'},
+        {name: '金殿玉楼', yomi: 'きんでんぎょくろう'},
+        {name: '空中楼閣', yomi: 'くうちゅうのろうかく'},
+        {name: '愚公移山', yomi: 'ぐこういざん'},
+        {name: '苦口婆心', yomi: 'くこうばしん'},
+        {name: '愚者一得', yomi: 'ぐしゃのいっとく'},
+        {name: '愚問愚答', yomi: 'ぐもんぐとう'},
+        {name: '群軽折軸', yomi: 'ぐんけいせつじく'},
+        {name: '鯨飲馬食', yomi: 'げいいんばしょく'},
+        {name: '鶏口牛後', yomi: 'けいこうぎゅうご'},
+        {name: '刑故無小', yomi: 'けいこむしょう'},
+        {name: '形単影隻', yomi: 'けいたんえいせき'},
+        {name: '軽慮浅謀', yomi: 'けいりょせんぼう'},
+        {name: '激濁揚清', yomi: 'げきだくようせい'},
+        {name: '血脈貫通', yomi: 'けつみゃくかんつう'},
+        {name: '堅甲利兵', yomi: 'けんこうりへい'},
+        {name: '権謀術数', yomi: 'けんぼうじゅっすう'},
+        {name: '賢良方正', yomi: 'けんりょうほうせい'},
+        {name: '巧言乱徳', yomi: 'こうげんらんとく'},
+        {name: '巧言令色', yomi: 'こうげんれいしょく'},
+        {name: '高材疾足', yomi: 'こうざいしっそく'},
+        {name: '光彩奪目', yomi: 'こうさいだつもく'},
+        {name: '好事多魔', yomi: 'こうじたま'},
+        {name: '功成名遂', yomi: 'こうせいめいすい'},
+        {name: '孔席墨突', yomi: 'こうせきぼくとつ'},
+        {name: '考績幽明', yomi: 'こうせきゆうめい'},
+        {name: '黄中内潤', yomi: 'こうちゅうないじゅん'},
+        {name: '黄道吉日', yomi: 'こうどうきちにち'},
+        {name: '功徳兼隆', yomi: 'こうとくけんりゅう'},
+        {name: '高論卓説', yomi: 'こうろんたくせつ'},
+        {name: '黒歯彫題', yomi: 'こくしちょうだい'},
+        {name: '国士無双', yomi: 'こくしむそう'},
+        {name: '孤苦零丁', yomi: 'こくれいてい'},
+        {name: '孤軍奮闘', yomi: 'こぐんふんとう'},
+        {name: '古今無双', yomi: 'ここんむそう'},
+        {name: '枯樹生華', yomi: 'こじゅせいか'},
+        {name: '孤城落日', yomi: 'こじょうらくじつ'},
+        {name: '克己復礼', yomi: 'こっきふくれい'},
+        {name: '刻苦勉励', yomi: 'こっくべんれい'},
+        {name: '鼓舞激励', yomi: 'こぶげきれい'},
+        {name: '孤峰絶岸', yomi: 'こほうぜつがん'},
+        {name: '孤立無援', yomi: 'こりつむえん'},
+        {name: '困苦欠乏', yomi: 'こんくけつぼう'},
+        {name: '才子佳人', yomi: 'さいしかじん'},
+        {name: '載舟覆舟', yomi: 'さいしゅうふくしゅう'},
+        {name: '砂上楼閣', yomi: 'さじょうのろうかく'},
+        {name: '三綱五常', yomi: 'さんこうごじょう'},
+        {name: '三人文殊', yomi: 'さんにんもんじゅ'},
+        {name: '四海同胞', yomi: 'しかいどうほう'},
+        {name: '子建八斗', yomi: 'しけんはっと'},
+        {name: '試行錯誤', yomi: 'しこうさくご'},
+        {name: '事後承諾', yomi: 'じごしょうだく'},
+        {name: '士魂商才', yomi: 'しこんしょうさい'},
+        {name: '刺字漫滅', yomi: 'しじまんめつ'},
+        {name: '時代錯誤', yomi: 'じだいさくご'},
+        {name: '視聴言動', yomi: 'しちょうげんどう'},
+        {name: '失望落胆', yomi: 'しつぼうらくたん'},
+        {name: '雌伏雄飛', yomi: 'しふくゆうひ'},
+        {name: '四分五裂', yomi: 'しぶんごれつ'},
+        {name: '自暴自棄', yomi: 'じぼうじき'},
+        {name: '慈母敗子', yomi: 'じぼはいし'},
+        {name: '寂滅為楽', yomi: 'じゃくめついらく'},
+        {name: '車載斗量', yomi: 'しゃさいとりょう'},
+        {name: '邪説異端', yomi: 'じゃせついたん'},
+        {name: '終始一貫', yomi: 'しゅうしいっかん'},
+        {name: '取捨選択', yomi: 'しゅしゃせんたく'},
+        {name: '寿則多辱', yomi: 'じゅそくたじょく'},
+        {name: '受胎告知', yomi: 'じゅたいこくち'},
+        {name: '殊塗同帰', yomi: 'しゅとどうき'},
+        {name: '首尾一貫', yomi: 'しゅびいっかん'},
+        {name: '順風満帆', yomi: 'じゅんぷうまんぱん'},
+        {name: '証拠隠滅', yomi: 'しょうこいんめつ'},
+        {name: '生者必滅', yomi: 'しょうじゃひつめつ'},
+        {name: '相如四壁', yomi: 'しょうじょしへき'},
+        {name: '焦心苦慮', yomi: 'しょうしんくりょ'},
+        {name: '諸説紛紛', yomi: 'しょせつふんぷん'},
+        {name: '職権濫用', yomi: 'しょっけんらんよう'},
+        {name: '支離滅裂', yomi: 'しりめつれつ'},
+        {name: '神算鬼謀', yomi: 'しんさんきぼう'},
+        {name: '深山幽谷', yomi: 'しんざんゆうこく'},
+        {name: '仁者不憂', yomi: 'じんしゃふゆう'},
+        {name: '進取果敢', yomi: 'しんしゅかかん'},
+        {name: '神出鬼没', yomi: 'しんしゅつきぼつ'},
+        {name: '薪尽火滅', yomi: 'しんじんかめつ'},
+        {name: '新陳代謝', yomi: 'しんちんたいしゃ'},
+        {name: '心頭滅却', yomi: 'しんとうめっきゃく'},
+        {name: '深謀遠慮', yomi: 'しんぼうえんりょ'},
+        {name: '深慮遠謀', yomi: 'しんりょえんぼう'},
+        {name: '深謀遠慮', yomi: 'しんぼうえんりょ'},
+        {name: '辛労辛苦', yomi: 'しんろうしんく'},
+        {name: '随感随筆', yomi: 'ずいかんずいひつ'},
+        {name: '随機応変', yomi: 'ずいきおうへん'},
+        {name: '水随方円', yomi: 'すいずいほうえん'},
+        {name: '酔生夢死', yomi: 'すいせいむし'},
+        {name: '水村山郭', yomi: 'すいそんさんかく'},
+        {name: '随類応同', yomi: 'ずいるいおうどう'},
+        {name: '寸善尺魔', yomi: 'すんぜんしゃくま'},
+        {name: '生殺与奪', yomi: 'せいさつよだつ'},
+        {name: '清聖濁賢', yomi: 'せいせいだくけん'},
+        {name: '清淡虚無', yomi: 'せいたんきょむ'},
+        {name: '清廉潔白', yomi: 'せいれんけっぱく'},
+        {name: '世運隆替', yomi: 'せうんりゅうたい'},
+        {name: '赤心奉国', yomi: 'せきしんほうこく'},
+        {name: '是生滅法', yomi: 'ぜしょうめっぽう'},
+        {name: '節倹力行', yomi: 'せっけんりっこう'},
+        {name: '絶巧棄利', yomi: 'ぜっこうきり'},
+        {name: '摂取不捨', yomi: 'せっしゅふしゃ'},
+        {name: '潜移暗化', yomi: 'せんいあんか'},
+        {name: '千呼万喚', yomi: 'せんこばんかん'},
+        {name: '潜在意識', yomi: 'せんざいいしき'},
+        {name: '千載一遇', yomi: 'せんざいいちぐう'},
+        {name: '千乗万騎', yomi: 'せんじょうばんき'},
+        {name: '全身全霊', yomi: 'ぜんしんぜんれい'},
+        {name: '千辛万苦', yomi: 'せんしんばんく'},
+        {name: '前覆後戒', yomi: 'ぜんぷくこうかい'},
+        {name: '先憂後楽', yomi: 'せんゆうこうらく'},
+        {name: '粗衣粗食', yomi: 'そいそしょく'},
+        {name: '双宿双飛', yomi: 'そうしゅくそうひ'},
+        {name: '騒人墨客', yomi: 'そうじんぼっかく'},
+        {name: '粗製濫造', yomi: 'そせいらんぞう'},
+        {name: '大安吉日', yomi: 'たいあんきちじつ'},
+        {name: '大義滅親', yomi: 'たいぎめっしん'},
+        {name: '滞言滞句', yomi: 'たいげんたいく'},
+        {name: '大慈大悲', yomi: 'だいじだいひ'},
+        {name: '大処着墨', yomi: 'たいしょちゃくぼく'},
+        {name: '大声疾呼', yomi: 'たいせいしっこ'},
+        {name: '大胆不敵', yomi: 'だいたんふてき'},
+        {name: '大法小廉', yomi: 'たいほうしょうれん'},
+        {name: '多岐亡羊', yomi: 'たきぼうよう'},
+        {name: '択言択行', yomi: 'たくげんたくこう'},
+        {name: '託孤寄命', yomi: 'たくこきめい'},
+        {name: '多情多恨', yomi: 'たじょうたこん'},
+        {name: '奪胎換骨', yomi: 'だったいかんこつ'},
+        {name: '換骨奪胎', yomi: 'かんこつだったい'},
+        {name: '多謀善断', yomi: 'たぼうぜんだん'},
+        {name: '断簡零墨', yomi: 'だんかんれいぼく'},
+        {name: '丹書鉄契', yomi: 'たんしょてっけい'},
+        {name: '胆戦心驚', yomi: 'たんせんしんきょう'},
+        {name: '胆大心小', yomi: 'たんだいしんしょう'},
+        {name: '単文孤証', yomi: 'たんぶんこしょう'},
+        {name: '築室道謀', yomi: 'ちくしつどうぼう'},
+        {name: '竹林七賢', yomi: 'ちくりんしちけん'},
+        {name: '竹林七賢', yomi: 'ちくりんのしちけん'},
+        {name: '知小謀大', yomi: 'ちしょうぼうだい'},
+        {name: '知足不辱', yomi: 'ちそくふじょく'},
+        {name: '抽黄対白', yomi: 'ちゅうこうたいはく'},
+        {name: '忠魂義胆', yomi: 'ちゅうこんぎたん'},
+        {name: '朝衣朝冠', yomi: 'ちょういちょうかん'},
+        {name: '朝種暮穫', yomi: 'ちょうしゅぼかく'},
+        {name: '沈思凝想', yomi: 'ちんしぎょうそう'},
+        {name: '低回顧望', yomi: 'ていかいこぼう'},
+        {name: '天衣無縫', yomi: 'てんいむほう'},
+        {name: '天下無双', yomi: 'てんかむそう'},
+        {name: '天花乱墜', yomi: 'てんからんつい'},
+        {name: '天人五衰', yomi: 'てんにんのごすい'},
+        {name: '転迷開悟', yomi: 'てんめいかいご'},
+        {name: '凍解氷釈', yomi: 'とうかいひょうしゃく'},
+        {name: '同帰殊塗', yomi: 'どうきしゅと'},
+        {name: '同軌同文', yomi: 'どうきどうぶん'},
+        {name: '倒行逆施', yomi: 'とうこうぎゃくし'},
+        {name: '陶潜帰去', yomi: 'とうせんききょ'},
+        {name: '道聴塗説', yomi: 'どうちょうとせつ'},
+        {name: '党同伐異', yomi: 'とうどうばつい'},
+        {name: '同文同軌', yomi: 'どうぶんどうき'},
+        {name: '斗酒隻鶏', yomi: 'としゅせきけい'},
+        {name: '斗南一人', yomi: 'となんのいちにん'},
+        {name: '怒髪衝天', yomi: 'どはつしょうてん'},
+        {name: '南郭濫吹', yomi: 'なんかくらんすい'},
+        {name: '南征北伐', yomi: 'なんせいほくばつ'},
+        {name: '二者択一', yomi: 'にしゃたくいつ'},
+        {name: '日陵月替', yomi: 'にちりょうげったい'},
+        {name: '背信棄義', yomi: 'はいしんきぎ'},
+        {name: '白雲孤飛', yomi: 'はくうんこひ'},
+        {name: '博学審問', yomi: 'はくがくしんもん'},
+        {name: '博学篤志', yomi: 'はくがくとくし'},
+        {name: '白玉楼中', yomi: 'はくぎょくろうちゅう'},
+        {name: '博施済衆', yomi: 'はくしさいしゅう'},
+        {name: '白日昇天', yomi: 'はくじつしょうてん'},
+        {name: '伴食大臣', yomi: 'ばんしょくだいじん'},
+        {name: '帆腹飽満', yomi: 'はんぷくほうまん'},
+        {name: '百鍛千練', yomi: 'ひゃくたんせんれん'},
+        {name: '百錬成鋼', yomi: 'ひゃくれんせいこう'},
+        {name: '不朽不滅', yomi: 'ふきゅうふめつ'},
+        {name: '覆雨翻雲', yomi: 'ふくうほんうん'},
+        {name: '雲翻雨覆', yomi: 'うんぽんうふく'},
+        {name: '複雑怪奇', yomi: 'ふくざつかいき'},
+        {name: '複雑多岐', yomi: 'ふくざつたき'},
+        {name: '覆水不返', yomi: 'ふくすいふへん'},
+        {name: '夫唱婦随', yomi: 'ふしょうふずい'},
+        {name: '物換星移', yomi: 'ぶっかんせいい'},
+        {name: '武陵桃源', yomi: 'ぶりょうとうげん'},
+        {name: '不老長寿', yomi: 'ふろうちょうじゅ'},
+        {name: '文人墨客', yomi: 'ぶんじんぼっかく'},
+        {name: '奮励努力', yomi: 'ふんれいどりょく'},
+        {name: '平穏無事', yomi: 'へいおんぶじ'},
+        {name: '平気虚心', yomi: 'へいききょしん'},
+        {name: '片簡零墨', yomi: 'へんかんれいぼく'},
+        {name: '変幻自在', yomi: 'へんげんじざい'},
+        {name: '片言隻句', yomi: 'へんげんせきく'},
+        {name: '縫衣浅帯', yomi: 'ほういせんたい'},
+        {name: '暴虐非道', yomi: 'ぼうぎゃくひどう'},
+        {name: '奉公守法', yomi: 'ほうこうしゅほう'},
+        {name: '飽食終日', yomi: 'ほうしょくしゅうじつ'},
+        {name: '放胆小心', yomi: 'ほうたんしょうしん'},
+        {name: '墨子泣糸', yomi: 'ぼくしきゅうし'},
+        {name: '墨子兼愛', yomi: 'ぼくしけんあい'},
+        {name: '墨子薄葬', yomi: 'ぼくしはくそう'},
+        {name: '墨子悲糸', yomi: 'ぼくしひし'},
+        {name: '墨守成規', yomi: 'ぼくしゅせいき'},
+        {name: '北斗七星', yomi: 'ほくとしちせい'},
+        {name: '翻雲覆雨', yomi: 'ほんうんふくう'},
+        {name: '雲翻雨覆', yomi: 'うんぽんうふく'},
+        {name: '無位無冠', yomi: 'むいむかん'},
+        {name: '無援孤立', yomi: 'むえんこりつ'},
+        {name: '孤立無援', yomi: 'こりつむえん'},
+        {name: '無間地獄', yomi: 'むけんじごく'},
+        {name: '無縫天衣', yomi: 'むほうてんい'},
+        {name: '天衣無縫', yomi: 'てんいむほう'},
+        {name: '明哲保身', yomi: 'めいてつほしん'},
+        {name: '名論卓説', yomi: 'めいろんたくせつ'},
+        {name: '滅私奉公', yomi: 'めっしほうこう'},
+        {name: '免許皆伝', yomi: 'めんきょかいでん'},
+        {name: '面目躍如', yomi: 'めんもくやくじょ'},
+        {name: '文殊知恵', yomi: 'もんじゅのちえ'},
+        {name: '勇猛果敢', yomi: 'ゆうもうかかん'},
+        {name: '揚清激濁', yomi: 'ようせいげきだく'},
+        {name: '乱臣賊子', yomi: 'らんしんぞくし'},
+        {name: '粒粒辛苦', yomi: 'りゅうりゅうしんく'},
+        {name: '良妻賢母', yomi: 'りょうさいけんぼ'},
+        {name: '冷汗三斗', yomi: 'れいかんさんと'},
+        {name: '霊魂不滅', yomi: 'れいこんふめつ'},
+        {name: '零丁孤苦', yomi: 'れいていこく'},
+        {name: '老婆心切', yomi: 'ろうばしんせつ'},
+        {name: '炉辺談話', yomi: 'ろへんだんわ'},
+        {name: '和魂漢才', yomi: 'わこんかんさい'},
+        {name: '和魂洋才', yomi: 'わこんようさい'},
+      ],
+    }
+  },
+  mounted:function() {
+      this.test();
   },
   methods: {
-    window:onload = function () {
-      const subject = document.getElementById('subject');
+    test() {
       const timer = document.getElementById('timer');
-      const form = document.forms.typing;
-      const textList = [
-        '君をわすれない',
-        '曲がりくねった道をゆく',
-        '生まれたての太陽と',
-        '夢を焦がす黄色い砂',
-        'Welcome'
-      ];
+      this.subject = document.getElementById('subject');
+      this.form = document.forms.typing;
       
-      let TIME = 20;
-      let count = 0;
-      let state = true;
+      let TIME = 5;
       
-      const countdown = setInterval(function() {
+      this.countdown = setInterval(function() {
         timer.textContent = '制限時間：' + --TIME + '秒';
-        if(TIME <= 0) finish();
-      }, 1000);
-      
-      form.addEventListener('submit', function(e) {
-        if(!state) return;
-        if(form.input.value === subject.textContent) {
-          count++;
-          init();
-        } else {
-          subject.textContent = '間違いです！';
-          TIME = 1;
-          state = false;
-        }
-      });
-      
-      init();
-      
-      function init() {
-        const rnd = Math.floor(Math.random() * textList.length);
-        subject.textContent = textList[rnd];
-        form.input.value = '';
-        form.input.focus();
-      }
-      
-      function finish() {
-        clearInterval(countdown);
-        subject.textContent = '正解数は' + count + '個でした！';
-        state = false;
-      }
+        if(TIME <= 0) {
+          this.finish(this.count);
+        };
+      }.bind(this), 1000);
 
+      // 問題をランダムで表示する処理呼び出し
+      this.init(this.subject, this.form);
+
+    },
+    //処理終了の処理
+    finish(count) {
+      clearInterval(this.countdown);
+      this.subject.textContent = '正解数は' + count + '個でした！';
+      this.state = false;
+    },
+    init(subject, form) {
+      let i = this.kanken3.length
+      this.rnd = Math.floor(Math.random() * i);
+      this.$set(this.target, 'name', this.kanken3[this.rnd].name);
+      this.$set(this.target, 'yomi', this.kanken3[this.rnd].yomi);
+      subject.textContent = this.target.name
+      form.input.value = '';
+      form.input.focus();
+    },
+    check() {
+      if(!this.state) return;
+      if(this.form.input.value === this.target.yomi) {
+        this.count++;
+        init(this.subject, this.form);
+      } else {
+        this.subject.textContent = '間違いです！';
+        this.finish(this.count);
+      }
     },
   },
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style scoped>
 h1,
 h2 {
