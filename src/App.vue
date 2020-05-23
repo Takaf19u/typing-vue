@@ -2,7 +2,9 @@
   <div id="app">
     <hedderitem @receiveComponentId="changeComponent" />
     <div id="main">
-      <router-view :kanken3="kanken3" />
+      <transition mode="out-in" name="fade">
+        <router-view :kanken3="kanken3" />
+      </transition>
     </div>
     <div id="footer">
     
@@ -347,7 +349,6 @@ export default {
   },
   methods: {
     changeComponent (id) {
-      debugger
       this.componentId = id
     },
   },
@@ -372,5 +373,23 @@ export default {
     height:100px;
     width: 100%;
     background: turquoise;
+  }
+
+  /* 終了時 */
+  .fade-enter-to {
+    opacity: 1;
+  }
+  /* アニメーション実行中 */
+  .fade-enter-active {
+    transition: all .5s 0s ease-in;
+  }
+  .fade-leave {
+    opacity: 1;
+  }
+  .fade-leave-to {
+    opacity: 0;
+  }
+  .fade-leave-active {
+    transition: all .5s 0s ease-in;
   }
 </style>

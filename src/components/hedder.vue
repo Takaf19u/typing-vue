@@ -2,7 +2,7 @@
   <div id='hedder'>
     <ul>
       <li @click="changeId(0)"><router-link to="/">top</router-link></li>
-      <li @click="changeId(1)"><p>漢検３級</p></li>
+      <li @click="changeId(1)"><router-link to="/typing">漢検３級</router-link></li>
     </ul>
   </div>
 </template>
@@ -40,9 +40,15 @@ export default {
 ul {
   list-style:  none;
   display: flex;
+  justify-content: space-around;
+  line-height: 50px;
 }
 li {
-  
+}
+
+a {
+  color: white;
+  text-decoration: none;
 }
 
 </style>

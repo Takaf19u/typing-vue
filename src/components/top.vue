@@ -284,7 +284,7 @@
 
   #title2 {
     position: absolute;
-      top: 40%;
+      top: 38%;
       left: 0;
       right: 0;
       margin: auto;
@@ -293,10 +293,10 @@
   #title3 {
     font-family: 'M PLUS 1p', sans-serif;
     position: absolute;
-      bottom: 5%;
+      bottom: 10%;
       left: 0;
       right: 0;
-    font-size: 2.2em;
+    font-size: 2em;
   }
 }
 
@@ -318,11 +318,11 @@
     height: 100%;
     width: 100%;
     text-align: center;
-    padding: 5px;
+    padding: 30px 5px;
   }
 
   .topPage-title--items > p {
-    font-size: calc(500% + 2vw);
+    font-size: calc(500% + 0.5vw);
     margin: 0;
   }
 
@@ -337,10 +337,10 @@
   #title3 {
     font-family: 'M PLUS 1p', sans-serif;
     position: absolute;
-      bottom: 5%;
+      bottom: 15%;
       left: 0;
       right: 0;
-    font-size: calc(100% + 0.5vw);
+    font-size: calc(120% + 1vw);
   }
 }
 
