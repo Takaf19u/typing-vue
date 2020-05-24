@@ -259,7 +259,7 @@
 @media screen and ( min-width:480px ){
   .topPage-title {
     position: absolute;
-      top: 100px;
+      top: 50px;
       bottom: 100px;
       right: 0;
       left: 0;
@@ -304,7 +304,7 @@
 @media screen and ( max-width:479px ){
   .topPage-title {
     position: absolute;
-      top: 100px;
+      top: 50px;
       bottom: 100px;
       right: 0;
       left: 0;
