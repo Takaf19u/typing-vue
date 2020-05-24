@@ -345,7 +345,6 @@ export default {
   },
   components: {
     'hedderitem': Hedder,
-    // 'user-show': UserShow,
   },
   methods: {
     changeComponent (id) {
@@ -359,17 +358,18 @@ export default {
   #app {
     height: 100%;
     width: 100%;
-    overflow: scroll;
+    overflow: hidden;
   }
 
   #main {
-    height: calc(100% - 150px);
+    position: relative;
+    height: 100%;
     min-height: 400px;
-    margin-top: 50px;
   }
 
   #footer {
-    margin-bottom: 0;
+    position: absolute;
+    bottom: 0;
     height:100px;
     width: 100%;
     background: turquoise;
