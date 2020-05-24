@@ -345,7 +345,6 @@ export default {
   },
   components: {
     'hedderitem': Hedder,
-    // 'user-show': UserShow,
   },
   methods: {
     changeComponent (id) {

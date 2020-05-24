@@ -1,13 +1,21 @@
 <template>
-  <div class='hello'>
-    <p>{{ kanken3[0].name }}</p>
-    <h1 id='subject'></h1>
+  <div id='typingMain'>
+    <div id="kanji">
+      <p id='yomigana'>ひゃっかじてん</P>
+      <P id='subject'>百科事典</P>
+    </div>
     <form name='typing' @submit.prevent='check()'>
-      <input name='input' type='text' />
-      <input name='btn' type='submit' value='送信' />
+      <span class="inputGroup">
+        <input name='input' type='text' autofocus inputmode="kana" />
+        <br>
+        <input name='btn' type='submit' value='送信' />
+      </span>
     </form>
     <p></p>
-    <p id='timer'>制限時間：5秒</p>
+    <div class="timer-items">
+      <p id='timer'>10</p>
+      <span class="circle1"></span>
+    </div>
   </div>
 </template>
 
@@ -18,6 +26,7 @@ export default {
   data() {
     return {
       rnd: 0,
+      viewChange: true,
       target: {name: "", yomi: ""},
       state: true,
       form: null,
@@ -26,19 +35,22 @@ export default {
       countdown: 0,
     }
   },
-  mounted:function() {
-      this.test();
-  },
+  // mounted:function() {
+
+  // },
   methods: {
-    test() {
-      const timer = document.getElementById('timer');
+    typeCountdown() {
       this.subject = document.getElementById('subject');
       this.form = document.forms.typing;
-      
-      let TIME = 5;
+
+      this.test();
+    },
+    test() {
+      const timer = document.getElementById('timer');
+      let TIME = 10;
       
       this.countdown = setInterval(function() {
-        timer.textContent = '制限時間：' + --TIME + '秒';
+        timer.textContent =  --TIME;
         if(TIME <= 0) {
           this.finish(this.count);
         };
@@ -73,25 +85,103 @@ export default {
         this.finish(this.count);
       }
     },
+    changeView() {
+      this.viewChange = false;
+    }
   },
 };
 </script>
 
 <!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style scoped>
-h1,
-h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
+  #typingMain {
+    text-align: center;
+    height: 100%;
+  }
+
+#kanji {
+  height: 50%;
+  background: blue;
   display: inline-block;
-  margin: 0 10px;
 }
-a {
-  color: #42b983;
+
+#kanji > P {
+  line-height: 1;
+  margin: 10px;
+}
+
+#yomigana {
+  background: cornsilk;
+  font-size: 2em;
+  margin: auto;
+}
+
+#subject {
+  background: cornsilk;
+  font-size: 6em;
+  margin: auto;
+}
+
+
+form {
+  height: 50%;
+  background: red;
+  display: flex;
+  align-items: center;
+}
+
+.inputGroup {
+  margin: 0 auto;
+}
+
+
+input[type="text"] {
+	min-width:100px;
+  font-size: 2em;
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid black;
+    border-radius: 0;
+    outline: none;
+    background: none;
+   
+}
+
+
+.timer-items {
+  width:80px;
+  height:80px;
+  border-radius:100%;
+  line-height: 80px;
+  margin: 0 auto;
+  position: relative;
+  background: white;
+}
+
+
+
+#timer {
+  font-family: 'Chelsea Market', cursive;
+  font-size: 3em;
+  color: rgb(83, 82, 82);
+}
+
+.circle1{
+  position: absolute;
+    top: -10px;
+    bottom: -10px;
+    left: -10px;
+    right: -10px;
+    z-index: -1;
+  display:inline-block;
+  border-radius:100%;
+  border:10px double gold;
+  background: linear-gradient(-90deg, #FF00A1, #F6FF00);
+  animation:5s linear infinite rotation;
+}
+
+@keyframes rotation{
+  0%{ transform:rotate(0);}
+  100%{ transform:rotate(360deg); }
 }
 </style>
