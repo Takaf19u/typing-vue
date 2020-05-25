@@ -4,7 +4,7 @@
       <div class="topPage-title--items">
         <p id="title1">KANKEN</p>
         <p id="title2">YOJIJUKU</p>
-        <p id="title3">-- よみがなタイピング --</p>
+        <p id="title3">--- よみがなタイピング ---</p>
       </div>
     </div>
     <div class="font" id="group1">
@@ -259,7 +259,7 @@
 @media screen and ( min-width:480px ){
   .topPage-title {
     position: absolute;
-      top: 50px;
+      top: 100px;
       bottom: 100px;
       right: 0;
       left: 0;
@@ -291,7 +291,7 @@
   }
 
   #title3 {
-    font-family: 'M PLUS 1p', sans-serif;
+    font-family: "Nico Moji";
     position: absolute;
       bottom: 10%;
       left: 0;
@@ -304,7 +304,7 @@
 @media screen and ( max-width:479px ){
   .topPage-title {
     position: absolute;
-      top: 50px;
+      top: 100px;
       bottom: 100px;
       right: 0;
       left: 0;
