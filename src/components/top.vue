@@ -36,7 +36,7 @@
         kanji3: [],
       }
     },
-    created:function() {
+    mounted:function() {
       this.randomIndex();
     },
     methods: {

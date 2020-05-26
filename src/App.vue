@@ -3,7 +3,7 @@
     <hedderitem @receiveComponentId="changeComponent" />
     <div id="main">
       <transition mode="out-in" name="fade">
-        <router-view :kanken3="kanken3" />
+        <router-view :kanken3="kanjiList" />
       </transition>
     </div>
     <div id="footer">
@@ -20,6 +20,7 @@ export default {
   data () {
     return {
       componentId: 0,
+      kanjiList: [],
       kanken3: [
         {name: '哀哀父母', yomi: 'あいあいふぼ'},
         {name: '哀糸豪竹', yomi: 'あいしごうちく'},
@@ -341,15 +342,39 @@ export default {
         {name: '和魂漢才', yomi: 'わこんかんさい'},
         {name: '和魂洋才', yomi: 'わこんようさい'},
       ],
+
     }
   },
   components: {
     'hedderitem': Hedder,
   },
+  created:function() {
+    this.changeComponent(this.componentId);
+  },
   methods: {
     changeComponent (id) {
       this.componentId = id
+      // 配列初期化
+      this.kanjiList.splice(-this.kanjiList.length);
+      debugger
+      if (this.componentId == 0) {
+        Object.assign(this.kanjiList, this.kanken3);
+      }
+      else if (this.componentId == 1) {
+        Object.assign(this.kanjiList, this.shuffleArry(this.kanken3));
+      }
     },
+      shuffleArry(kanken) {
+      // 配列の中身をシャッフルして返す
+      debugger
+      for(var i = kanken.length - 1; i > 0; i--){
+        var r = Math.floor(Math.random() * (i + 1));
+        var tmp = kanken[i];
+        kanken[i] = kanken[r];
+        kanken[r] = tmp;
+      }
+      return kanken
+    }
   },
 };
 </script>
