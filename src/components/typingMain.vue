@@ -659,7 +659,7 @@ input[type="text"] {
   #yomigana {
     font-size: 1.8em;
   }
-  
+
   #kanji::after{
     content:"";
     position: absolute;

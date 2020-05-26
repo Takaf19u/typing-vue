@@ -19,7 +19,8 @@ export default {
   name: 'App',
   data () {
     return {
-      componentId: 0,
+      componentId: Number,
+      routes: ["/", "/typing"],
       kanjiList: [],
       kanken3: [
         {name: '哀哀父母', yomi: 'あいあいふぼ'},
@@ -349,14 +350,22 @@ export default {
     'hedderitem': Hedder,
   },
   created:function() {
-    this.changeComponent(this.componentId);
+    switch( this.$router.currentRoute.path ) {
+      case this.routes[0]:
+        this.componentId = 0;
+        break;
+    
+      case this.routes[1]:
+        this.componentId = 1;
+        break;
+    };
+    this.changeKanjiList();
   },
   methods: {
     changeComponent (id) {
       this.componentId = id
-      // 配列初期化
-      this.kanjiList.splice(-this.kanjiList.length);
-      debugger
+    },
+    changeKanjiList () {
       if (this.componentId == 0) {
         Object.assign(this.kanjiList, this.kanken3);
       }
@@ -366,7 +375,6 @@ export default {
     },
       shuffleArry(kanken) {
       // 配列の中身をシャッフルして返す
-      debugger
       for(var i = kanken.length - 1; i > 0; i--){
         var r = Math.floor(Math.random() * (i + 1));
         var tmp = kanken[i];
