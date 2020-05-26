@@ -65,11 +65,12 @@
   }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
-#topPage {
+#topPage {    
   position: relative;
-  height: 100%;
+  z-index: -1;
+  height: 95%;
   width: 100%;
   overflow: hidden;
   background: rgba(104, 102, 102, 0.537);
@@ -90,7 +91,8 @@
 }
 
 #group1 > p {
-  margin-bottom: 20px;
+  margin: 20px;
+  width: 100%;
 }
 
 #group2 {
@@ -98,7 +100,7 @@
 }
 
 #group3 > p {
-  margin-top:  30px;
+  margin-top:  50px;
 }
 
 
@@ -110,6 +112,8 @@
 
 /* グループ１の設定（横重ねる） */
 #group1 p:nth-child(1) {
+  position: absolute;
+   bottom: 0;
   animation: loop 20s -5s linear infinite;
   font-size: calc(2em + 0.5vw);
 }
@@ -259,7 +263,7 @@
 @media screen and ( min-width:480px ){
   .topPage-title {
     position: absolute;
-      top: 100px;
+      top: 150px;
       bottom: 100px;
       right: 0;
       left: 0;
@@ -291,7 +295,7 @@
   }
 
   #title3 {
-    font-family: "Nico Moji";
+    font-family: "nicoMoji";
     position: absolute;
       bottom: 10%;
       left: 0;
@@ -304,13 +308,14 @@
 @media screen and ( max-width:479px ){
   .topPage-title {
     position: absolute;
-      top: 100px;
+      top: 150px;
       bottom: 100px;
       right: 0;
       left: 0;
       margin: auto;
     z-index: 1;
     width: 100%;
+    min-width: 380px;
     height: 350px;
     background: rgba(255, 255, 255, 0.9);
   }
@@ -335,7 +340,7 @@
   }
 
   #title3 {
-    font-family: 'M PLUS 1p', sans-serif;
+    font-family: "nicoMoji";
     position: absolute;
       bottom: 15%;
       left: 0;
