@@ -358,7 +358,7 @@ export default {
   #app {
     height: 100%;
     width: 100%;
-    overflow: hidden;
+    /* overflow: hidden; */
   }
 
   #main {
@@ -370,9 +370,19 @@ export default {
   #footer {
     position: absolute;
     bottom: 0;
-    height:100px;
+    height:60px;
     width: 100%;
-    background: turquoise;
+    z-index: 0;
+    background: rgb(1, 18, 63);
+  }
+
+  #footer::before {
+    content:"";
+    position: absolute;
+    bottom: 0;
+    height: 80px;
+    width: 100%;
+    border-top: 10px solid rgb(1, 18, 63);
   }
 
   /* 終了時 */
