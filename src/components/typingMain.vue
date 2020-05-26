@@ -18,10 +18,18 @@
             <p>・時間切れ または ミスを３回するとゲーム終了です。</p>
           </div>
       </div>
-      <div class="formItems" v-if="startBtn">
+      <!-- フォーム部分 -->
+      <div class="formItems" v-if="formbtn.start">
         <div id="judge"></div>
         <div class="mainform">
           <div id="startbtn" @click="typeCountdown()">スタート</div>
+        </div>
+        <div id="mainExplanation"></div>
+      </div>
+      <div class="formItems" v-else-if="formbtn.reset">
+        <div id="judge"></div>
+        <div class="mainform">
+          <div id="startbtn" @click="pageReset()">再挑戦！！</div>
         </div>
         <div id="mainExplanation"></div>
       </div>
@@ -44,7 +52,7 @@
     <transition mode="out-in" name="fade">
       <div id="countTimer" v-show="timeview">
         <div class="timer-items">
-          <p id='timer'>10</p>
+          <p id='timer'>{{SETTIME}}</p>
           <span class="circle1"></span>
         </div>
       </div>
@@ -60,7 +68,7 @@ export default {
   data() {
     return {
       rnd: 0,
-      startBtn: true,
+      formbtn: {start: true, reset: false,},
       timeview: false,
       question: "？　？　？　？",
       judge: 3,
@@ -78,7 +86,7 @@ export default {
       jIconFalse: false,
       rightCount: 0,
       countdown: 0,
-      SETTIME: 10,
+      SETTIME: 20,
       TIME: 0
     }
   },
@@ -86,6 +94,12 @@ export default {
     this.createBubles();
   },
   methods: {
+    pageReset() {
+      // vue-routerのrouter.goメソッド
+      // currentRoute.path=>現在のページパス
+      // これを渡すことで、リロード処理をしてくれる
+      this.$router.go({path: this.$router.currentRoute.path, force: true})
+    },
     typeCountdown() {
       this.subject = document.getElementById('subject');
       this.explanation = document.getElementById('explanation');
@@ -98,7 +112,7 @@ export default {
       setTimeout(this.startCountdown, 800);
 
       this.timeview = true
-      this.startBtn = false
+      this.formbtn.start = false
     },
     startCountdown() {
      let count = 3;
@@ -167,7 +181,7 @@ export default {
             clearInterval(set);
             this.jIcon = false;
             this.init(this.subject, this.form);
-            this.TIME = SETTIME + 1;
+            this.TIME = this.SETTIME + 1;
           };
         }.bind(this), 10);
 
@@ -182,7 +196,7 @@ export default {
           if (current > falseTime) {
             clearInterval(set);
             heartIcon.style.opacity = 0;
-            this.TIME = SETTIME + 1;
+            this.TIME = this.SETTIME + 1;
             this.jIconFalse = false;
             this.judge--
             // ハートがなくなったら終了
@@ -200,14 +214,15 @@ export default {
     //処理終了の処理
     finish(rightCount) {
       clearInterval(this.countdown);
-      this.yomigana.textContent = rightCount + "もんせいかい";
+      this.yomigana.textContent = rightCount + "問せいかい";
       this.subject.textContent = "";
       if(rightCount == 0) {
         this.result.textContent = '努力あるのみ';
       } else {
         this.result.textContent = "よく頑張りました";
       }
-      this.rightCount = 0;
+
+      this.formbtn.reset = true;
       this.state = false;
     },
     changeView() {
@@ -227,7 +242,8 @@ export default {
       }
  
       // setInterval function used to create new bubble every 350 milliseconds
-      setInterval(function(){
+      
+      let bubleId = setInterval(function(){
           var size = this.randomValue(sArray);
           var begin = new Date() - 0;
           var myStyle = {
@@ -243,12 +259,18 @@ export default {
             zIndex: 0
           }
 
+          // typing以外のページに遷移した場合、処理をとめる
+          if (this.$route.path !== '/typing') {
+            clearInterval(bubleId);
+          }
+
           // individualbubbleの作成
           let individualbubble = document.createElement("div");
           for(var prop in myStyle) {
             individualbubble.style[prop] = myStyle[prop];
           }
-          bubbles.appendChild(individualbubble);
+
+          bubbles.appendChild(individualbubble)
 
           // 泡を動かす処理
           var id = setInterval(function() {
@@ -298,17 +320,17 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 #bubbles {
   height: 100%;
   width: 100%;
   background: rgba(104, 102, 102, 0.537);
   background-image: -webkit-radial-gradient(rgba(218, 214, 214, 0.323),(82, 81, 81), rgba(44, 42, 42, 0.651));
   background-image: radial-gradient(rgba(218, 214, 214, 0.323), rgba(44, 42, 42, 0.651));
-
+  overflow: hidden;
 }
   #typingMain {
-    margin-top: 50px;
+    margin-top: 80px;
     text-align: center;
     height: 100%;
     position: relative;
@@ -318,7 +340,7 @@ export default {
 /* スタートボタン */
   #startbtn {
     margin: 30px auto;
-    font-family: "Nico Moji";
+    font-family: "nicoMoji";
     position: relative;
   z-index: 2;
   width: 200px;
@@ -371,35 +393,10 @@ export default {
   background-color: #59b1eb;
 }
 
-
-#typingMain-contents {
-  width: 480px;
-  height: 100%;
-  margin: 0 auto;
-  padding: 60px 0px;
-}
-
-#kanji {
-  padding: 20px 10px;
-  background: rgba(245, 243, 243, 0.842);
-  position: relative;
-  height: 180px;
-}
-#kanji::after{
-  content:"";
-  position: absolute;
-    top: -10px;
-    bottom: -10px;
-    left: -10px;
-    right: -10px;
-  border: lightseagreen 10px double;
-}
-
 #bubbles {
 display: inline-block;
 font-family: arial;
 position: relative;
-padding: 0 10px;
 }
 
 .yomiganaBox {
@@ -411,28 +408,20 @@ padding: 0 10px;
   margin: auto;
   z-index: 3;
   height: 45px;
-  width: 385px;
-}
-.yomiganaBox::after {
-  content:"";
-  border: lightseagreen 8px double;
-  border-radius: 5px;
-  position: absolute;
-  top: -9px;
-  left: -9px;
-  right: 0;
-  margin: auto;
-  z-index: 4;
-  height: 60px;
-  width: 400px;
 }
 
 #yomigana {
-  font-family: "Nico Moji";
-  font-size: 1.8em;
+  font-family: "nicoMoji";
   color: gray;
   line-height: 45px;
 }
+
+  #kanji {
+    padding: 20px 10px;
+    background: rgba(245, 243, 243, 0.842);
+    position: relative;
+    height: 180px;
+  }
 
 #subject {
   margin-top: 20px;
@@ -454,10 +443,10 @@ padding: 0 10px;
 }
 
 #result {
-  font-size: 3em;
-  font-family: "M PLUS 1p";
+  // font-size: 4em;
+  font-family: "nicoMoji";
   font-weight: bold;
-  color: cornflowerblue;
+  color: rgb(255, 189, 7);
   text-shadow: 3px 1px rgb(113, 204, 247);
   line-height: 100px;
 }
@@ -477,7 +466,7 @@ padding: 0 10px;
 #judge {
   height: 50px;
   padding: 10px;
-  background: rgba(32, 178, 171, 0.8);
+  background: rgba(13, 63, 138, 0.747);
 }
 
 #judge > .icon {
@@ -545,67 +534,14 @@ input[type="text"] {
 
 #mainExplanation {
   font-family: 'Chelsea Market', cursive;
-  background: rgba(32, 178, 171, 0.8);
-  color: rgb(91, 91, 92);
-  text-shadow: 1px 3px rgb(201, 198, 198);
+  background: rgba(13, 63, 138, 0.747);
+  color: rgb(249, 249, 252);
+  text-shadow: 1px 3px rgb(51, 50, 50);
   font-size: 1.2em;
   height: 50px;
   line-height: 50px;
 }
 
-#countTimer {
-  position: absolute;
-    bottom: -200px;
-    right: -220px;
-}
-
-.timer-items {
-  width:400px;
-  height:400px;
-  line-height: 400px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 5;
-}
-
-
-#timer {
-  font-family: 'Chelsea Market', cursive;
-  font-size: 7.5em;
-  background: white;
-  line-height: 180px;
-  text-align: left;
-  padding-left: 80px;
-  width:400px;
-  height:400px;
-  border-radius:100%;
-  color: rgba(83, 82, 82, 0.712);
-  position: relative;
-}
-
-#timer::before {
-  position: absolute;
-  width:400px;
-  height:400px;
-  line-height: 400px;
-  background: white;
-  line-height: 100px;
-  border-radius:100%;
-}
-
-.circle1{
-  position: absolute;
-    top: -30px;
-    bottom: -30px;
-    left: -30px;
-    right: -30px;
-    z-index: -1;
-  display:inline-block;
-  border-radius:100%;
-  border:10px double gold;
-  background: linear-gradient(-90deg, #FF00A1, #F6FF00);
-  animation:5s linear infinite rotation;
-}
 
 @keyframes rotation{
   0%{ transform:rotate(0);}
@@ -644,6 +580,219 @@ input[type="text"] {
 .fadeout-enter-to {
   /* 終わったら表示して欲しいので 0 */
   opacity: 0;
+}
+
+
+/* 650px以上に適用 */
+@media screen and ( min-width:650px ){
+
+  #countTimer {
+    position: absolute;
+      bottom: -160px;
+      right: -220px;
+  }
+
+  .timer-items {
+    width:400px;
+    height:400px;
+    line-height: 400px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 5;
+  }
+
+  #timer {
+    font-family: 'Chelsea Market', cursive;
+    font-size: 7em;
+    background: white;
+    line-height: 200px;
+    text-align: left;
+    padding-left: 60px;
+    width:400px;
+    height:400px;
+    border-radius:100%;
+    color: rgba(83, 82, 82, 0.712);
+    position: relative;
+  }
+
+  #timer::before {
+    position: absolute;
+    width:400px;
+    height:400px;
+    background: white;
+    line-height: 100px;
+    border-radius:100%;
+  }
+
+  .circle1{
+    position: absolute;
+      top: -30px;
+      bottom: -30px;
+      left: -30px;
+      right: -30px;
+      z-index: -1;
+    display:inline-block;
+    border-radius:100%;
+    border:10px double gold;
+    background: linear-gradient(-90deg, #FF00A1, #F6FF00);
+    animation:5s linear infinite rotation;
+  }
+}
+
+@media screen and ( min-width:480px ){
+  .yomiganaBox {
+    width: 385px;
+  }
+  .yomiganaBox::after {
+    content:"";
+    border: rgba(13, 63, 138, 0.747) 8px double;
+    border-radius: 5px;
+    position: absolute;
+    top: -9px;
+    left: -9px;
+    right: 0;
+    margin: auto;
+    z-index: 4;
+    height: 60px;
+    width: 400px;
+  }
+  #yomigana {
+    font-size: 1.8em;
+  }
+  
+  #kanji::after{
+    content:"";
+    position: absolute;
+      top: -10px;
+      bottom: -10px;
+      left: -10px;
+      right: -10px;
+    border: rgba(13, 63, 138, 0.747) 10px double;
+  }
+
+  #bubbles {
+  padding: 0 10px;
+  }
+
+  #typingMain-contents {
+  width: 480px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 60px 0px;
+  }
+
+  #subject {
+    font-size: 6em;
+  }
+  #result {
+    font-size: 4em;
+  }
+}
+
+@media screen and ( max-width:649px ){
+
+  #result {
+  font-size: 3em;
+  }
+
+  #countTimer {
+    position: absolute;
+      bottom: -50px;
+      right: 0px;
+      left: 0px;
+      margin: auto;
+  }
+
+  .timer-items {
+    width:200px;
+    height:200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 5;
+  }
+
+  #timer {
+    font-family: 'Chelsea Market', cursive;
+    font-size: 4em;
+    background: white;
+    line-height: 80px;
+    text-align: center;
+    width:200px;
+    height:200px;
+    border-radius:100%;
+    color: rgba(83, 82, 82, 0.712);
+    position: relative;
+  }
+
+  .circle1{
+    position: absolute;
+      top: -20px;
+      bottom: -20px;
+      left: -20px;
+      right: -20px;
+      z-index: -1;
+    display:inline-block;
+    border-radius:100%;
+    border:10px double gold;
+    background: linear-gradient(-90deg, #FF00A1, #F6FF00);
+    animation:5s linear infinite rotation;
+  }
+}
+
+/* スマホだけに適用するCSS */
+@media screen and ( max-width:479px ){
+  .yomiganaBox {
+    width: 360px;
+  }
+  .yomiganaBox::after {
+    content:"";
+    border: rgba(13, 63, 138, 0.747) 8px double;
+    border-radius: 5px;
+    position: absolute;
+    top: -9px;
+    left: -9px;
+    right: -9px;
+    margin: auto;
+    z-index: 4;
+    height: 60px;
+  }
+  #yomigana {
+    font-size: 1.4em;
+  }
+
+  #kanji::after{
+    content:"";
+    position: absolute;
+      top: -8px;
+      bottom: -8px;
+      left: -5px;
+      right: -5px;
+    border: rgba(13, 63, 138, 0.747) 3px solid;
+  }
+  #bubbles {
+  padding: 0;
+  }
+
+  #explanation {
+   font-size: 0.85em;
+  }
+
+  #typingMain-contents {
+  width: 100%;
+  min-width: 380px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 60px 5px;
+  }
+
+  #subject {
+    font-size: 5em;
+  }
+
+  #result {
+  font-size: 3em;
+  }
+
 }
 
 </style>
