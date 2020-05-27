@@ -91,7 +91,7 @@ export default {
     }
   },
   mounted:function() {
-    this.createBubles();
+    // this.createBubles();
   },
   methods: {
     pageReset() {
@@ -322,24 +322,22 @@ export default {
 
 <style scoped lang="scss">
 #bubbles {
-  height: 100%;
+  height: 100vh;
   width: 100%;
   background: rgba(104, 102, 102, 0.537);
   background-image: -webkit-radial-gradient(rgba(218, 214, 214, 0.323),(82, 81, 81), rgba(44, 42, 42, 0.651));
   background-image: radial-gradient(rgba(218, 214, 214, 0.323), rgba(44, 42, 42, 0.651));
-  overflow: hidden;
 }
   #typingMain {
-    margin-top: 80px;
-    text-align: center;
     height: 100%;
+    padding: 80px 0;
+    text-align: center;
     position: relative;
-    z-index: 1;
   }
 
 /* スタートボタン */
   #startbtn {
-    margin: 30px auto;
+    margin: 0 auto;
     font-family: "nicoMoji";
     position: relative;
   z-index: 2;
@@ -457,7 +455,7 @@ position: relative;
 }
 
 .formItems {
-  margin-top: 20px;
+  margin: 20px 0px;
   width: 100%;
   box-shadow: 1px 1px 5px 5px gray;
 }
@@ -496,11 +494,18 @@ position: relative;
 	}
 }
 
+// 力技ですが、font-size: 16px; はしておきつつ、
+// transform:scale() で縮小表示すると、iOS側には「16pxですよ」と示しつつ、
+// 見た目はコンパクト、ということが実現できます。
+input[type=text] {
+  font-size: 16px;
+  transform: scale(0.8);
+}
 
 .mainform {
   background: rgba(255, 255, 255, 0.822);
-  height: 150px;
-  padding: 10px;
+  max-height: 150px;
+  padding: 10% 10px;
 }
 
 .inputGroup {
@@ -588,7 +593,7 @@ input[type="text"] {
 
   #countTimer {
     position: absolute;
-      bottom: -160px;
+      bottom: -250px;
       right: -220px;
   }
 
@@ -640,6 +645,12 @@ input[type="text"] {
 }
 
 @media screen and ( min-width:480px ){
+  #typingMain {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
   .yomiganaBox {
     width: 385px;
   }
@@ -697,7 +708,7 @@ input[type="text"] {
 
   #countTimer {
     position: absolute;
-      bottom: -50px;
+      bottom: -130px;
       right: 0px;
       left: 0px;
       margin: auto;
@@ -741,6 +752,14 @@ input[type="text"] {
 
 /* スマホだけに適用するCSS */
 @media screen and ( max-width:479px ){
+
+  #typingMain {
+    padding: 20% 0;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
   .yomiganaBox {
     width: 360px;
   }
@@ -758,6 +777,14 @@ input[type="text"] {
   }
   #yomigana {
     font-size: 1.4em;
+  }
+
+  #kanji {
+    padding: 20px 5px;
+    background: rgba(245, 243, 243, 0.842);
+    position: relative;
+    height: 30%;
+    min-height: 150px;
   }
 
   #kanji::after{
@@ -791,6 +818,74 @@ input[type="text"] {
 
   #result {
   font-size: 3em;
+  }
+
+  .formItems {
+    width: 100%;
+    height: 30%;
+    box-shadow: 1px 1px 5px 5px gray;
+  }
+
+  .mainform {
+    min-height: 100px;
+    padding: 5% 10px;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    font-size: 1.2em;
+  }
+
+  #mainExplanation {
+    font-size: 1em;
+    height: 30px;
+    line-height: 30px;
+  }
+
+
+  #countTimer {
+    position: absolute;
+      bottom: -60px;
+      right: 0px;
+      left: 0px;
+      margin: auto;
+  }
+
+
+
+  .timer-items {
+    width:120px;
+    height:120px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 5;
+  }
+
+  #timer {
+    font-family: 'Chelsea Market', cursive;
+    font-size: 3em;
+    background: white;
+    line-height: 70px;
+    text-align: center;
+    width:120px;
+    height:120px;
+    border-radius:100%;
+    color: rgba(83, 82, 82, 0.712);
+    position: relative;
+  }
+
+  .circle1{
+    position: absolute;
+      top: -20px;
+      bottom: -20px;
+      left: -20px;
+      right: -20px;
+      z-index: -1;
+    display:inline-block;
+    border-radius:100%;
+    border:10px double gold;
+    background: linear-gradient(-90deg, #FF00A1, #F6FF00);
+    animation:5s linear infinite rotation;
   }
 
 }

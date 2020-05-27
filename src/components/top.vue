@@ -69,8 +69,7 @@
 
 #topPage {    
   position: relative;
-  z-index: -1;
-  height: 95%;
+  height: 100%;
   width: 100%;
   overflow: hidden;
   background: rgba(104, 102, 102, 0.537);

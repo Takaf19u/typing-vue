@@ -389,23 +389,21 @@ export default {
 
 <style scoped>
   #app {
-    height: 100%;
+    height: 100vh;
     width: 100%;
-    /* overflow: hidden; */
+    overflow: hidden;
   }
 
   #main {
     position: relative;
-    height: 100%;
+    height: calc(100% - 60px);
     min-height: 400px;
   }
 
   #footer {
-    position: absolute;
-    bottom: 0;
+    position: relative;
     height:60px;
     width: 100%;
-    z-index: 0;
     background: rgb(1, 18, 63);
   }
 
