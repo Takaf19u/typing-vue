@@ -2,7 +2,8 @@
   <div id='hedder'>
     <ul>
       <li @click="changeId(0)"><router-link to="/">TOP</router-link></li>
-      <li @click="changeId(1)"><router-link to="/typing">漢検三級</router-link></li>
+      <li @click="changeId(1)"><router-link :to="'/typing' + 1">三級</router-link></li>
+      <li @click="changeId(2)"><router-link :to="'/typing' + 2">準二級</router-link></li>
     </ul>
   </div>
 </template>
