@@ -313,9 +313,8 @@
       left: 0;
       margin: auto;
     z-index: 1;
-    width: 100%;
-    min-width: 380px;
-    height: 350px;
+    min-width: 300px;
+    min-height: 280px;
     background: rgba(255, 255, 255, 0.9);
   }
   .topPage-title--items {
