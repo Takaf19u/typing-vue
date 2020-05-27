@@ -12,10 +12,10 @@
           <div id="judgeIcon" v-else-if="jIconFalse"><font-awesome-icon icon='times' class="judgeicon" /></div>
           <div id="judgeIcon" v-else></div>
           <div id="explanation">
-            <p>・１問１０秒以内に回答してください。</p>
+            <p>・１問20秒以内に回答してください。</p>
             <p>・ひらがなでの入力をお願いします。</p>
-            <p>・よみがな入力後はEnterキーを押してください。</p>
-            <p>・時間切れ または ミスを３回するとゲーム終了です。</p>
+            <p>・入力後はEnterキーを押してください。</p>
+            <p>・時間切れ、ミスを３回するとゲームオーバーです。</p>
           </div>
       </div>
       <!-- フォーム部分 -->
@@ -64,16 +64,17 @@
 <script>
 export default {
   name: 'typeingMain',
-  props: ['kanken3'],
+  props: ['kankenList'],
   data() {
     return {
       rnd: 0,
+      kankenLength: Number,
       formbtn: {start: true, reset: false,},
       timeview: false,
       question: "？　？　？　？",
       judge: 3,
       viewChange: true,
-      target: {name: "", yomi: ""},
+      yomi: "",
       state: true,
       form: null,
       subject: null,
@@ -87,7 +88,13 @@ export default {
       rightCount: 0,
       countdown: 0,
       SETTIME: 20,
-      TIME: 0
+      TIME: 0,
+      kanken_index: 0,
+    }
+  },
+  watch: {
+    '$route' (to, from) {
+      this.pageReset();
     }
   },
   mounted:function() {
@@ -106,6 +113,7 @@ export default {
       this.yomigana = document.getElementById('yomigana');
       this.result = document.getElementById('result');
       this.judgeIcon = document.getElementById('judgeIcon');
+      this.kankenLength = this.kankenList.length;
 
       this.fadeOut(300, this.yomigana, 1);
       this.fadeOut(300, this.explanation, 1);
@@ -137,7 +145,7 @@ export default {
         timer.textContent =  --this.TIME;
         if(this.TIME <= 0) {
           timer.textContent =  this.SETTIME;
-          this.yomigana.textContent = this.target.yomi;
+          this.yomigana.textContent = this.yomi;
           this.jIconFalse = true;
           setTimeout( function() {
             this.jIconFalse = false;
@@ -146,19 +154,20 @@ export default {
         };
       }.bind(this), 1000);
 
-      // 問題をランダムで表示する処理呼び出し
       this.init(this.subject, this.form);
 
     },
-    // 問題をrandomで選択
+    // 問題をビューにセットする処理
     init(subject, form) {
-      let i = this.kanken3.length;
+      if (this.kankenLength == this.kanken_index) {
+        this.jIconFalse = false;
+        this.finish(this.rightCount);
+      }
       this.yomigana.textContent = this.question;
-      this.rnd = Math.floor(Math.random() * i);
-      this.$set(this.target, 'name', this.kanken3[this.rnd].name);
-      this.$set(this.target, 'yomi', this.kanken3[this.rnd].yomi);
-      subject.textContent = this.target.name
+      this.yomi = this.kankenList[this.kanken_index].yomi
+      subject.textContent = this.kankenList[this.kanken_index].name
       form.input.value = '';
+      this.kanken_index++
       form.input.focus();
     },
     // 入力文字をチェック
@@ -168,9 +177,10 @@ export default {
       var begin = new Date() - 0;
       let myTime = 800;
       let falseTime = 1000;
+
       // 正解処理
-      this.yomigana.textContent = this.target.yomi;
-      if(this.form.input.value === this.target.yomi) {
+      this.yomigana.textContent = this.yomi;
+      if(this.form.input.value === this.yomi) {
         this.rightCount++;
         this.jIcon = true;
 
@@ -216,7 +226,11 @@ export default {
       clearInterval(this.countdown);
       this.yomigana.textContent = rightCount + "問せいかい";
       this.subject.textContent = "";
-      if(rightCount == 0) {
+
+      if(rightCount == this.kankenLength) {
+        this.yomigana.textContent = "全問せいかい!!";
+        this.result.textContent = 'パーフェクト！！';
+      } else if(rightCount == 0) {
         this.result.textContent = '努力あるのみ';
       } else {
         this.result.textContent = "よく頑張りました";
@@ -342,12 +356,13 @@ export default {
     position: relative;
   z-index: 2;
   width: 200px;
+  line-height: 1;
   background-color: rgb(95, 93, 93);
   border: 2px solid rgba(161, 159, 159, 0.541);
   color: #fff;
-  font-size: 2em;
+  font-size: 1.8em;
   cursor: pointer;
-  padding: 5px 0;
+  padding: 10px 0;
 }
 
 #startbtn:hover {
@@ -446,7 +461,6 @@ position: relative;
   font-weight: bold;
   color: rgb(255, 189, 7);
   text-shadow: 3px 1px rgb(113, 204, 247);
-  line-height: 100px;
 }
 
 #explanation {
@@ -515,7 +529,6 @@ input[type=text] {
 
 input[type="text"] {
 	width:350px;
-  margin-top: 30px;
   text-align: center;
   font-size: 2em;
     padding: 0;
@@ -702,10 +715,6 @@ input[type="text"] {
 
 @media screen and ( max-width:649px ){
 
-  #result {
-  font-size: 3em;
-  }
-
   #countTimer {
     position: absolute;
       bottom: -130px;
@@ -754,7 +763,7 @@ input[type="text"] {
 @media screen and ( max-width:479px ){
 
   #typingMain {
-    padding: 20% 0;
+    padding: 60px 0;
     text-align: center;
     position: relative;
     z-index: 1;
@@ -783,15 +792,14 @@ input[type="text"] {
     padding: 20px 5px;
     background: rgba(245, 243, 243, 0.842);
     position: relative;
-    height: 30%;
-    min-height: 150px;
+    height: 120px;
   }
 
   #kanji::after{
     content:"";
     position: absolute;
       top: -8px;
-      bottom: -8px;
+      bottom: -6px;
       left: -5px;
       right: -5px;
     border: rgba(13, 63, 138, 0.747) 3px solid;
@@ -804,6 +812,10 @@ input[type="text"] {
    font-size: 0.85em;
   }
 
+  #explanation > p {
+   margin-bottom: 5px;
+  }
+
   #typingMain-contents {
   width: 100%;
   min-width: 380px;
@@ -813,7 +825,8 @@ input[type="text"] {
   }
 
   #subject {
-    font-size: 5em;
+    margin-top: 10px;
+    font-size: 3.5em;
   }
 
   #result {
@@ -827,11 +840,36 @@ input[type="text"] {
   }
 
   .mainform {
-    min-height: 100px;
-    padding: 5% 10px;
+    height: 100px;
+    padding: 20px 10px;
   }
 
+  #judgeIcon {
+  position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+  font-size: 5em;
+  color:rgba(255, 76, 45, 0.392);
+}
+
+/* 正解不正解の要素 */
+#judge {
+  height: 30px;
+  padding: 5px;
+  background: rgba(13, 63, 138, 0.747);
+}
+
+#judge > .icon {
+  font-size: 1.2em;
+  margin: 0 10px;
+  color: rgba(255, 76, 45, 0.692);
+}
+
   input[type="text"] {
+    margin-top: 10px;
     width: 100%;
     font-size: 1.2em;
   }
