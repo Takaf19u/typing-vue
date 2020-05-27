@@ -28,7 +28,7 @@
 
 <script>
   export default {
-    props: ['kanken3'],
+    props: ['kankenList'],
     data() {
       return {
         kanji1: [],
@@ -46,8 +46,8 @@
         let rands = [];
         // randomで値を１５個選定
         while (cnt <= 15) {
-          i = Math.floor( Math.random() * this.kanken3.length );
-          rands.push(this.kanken3[i]);
+          i = Math.floor( Math.random() * this.kankenList.length );
+          rands.push(this.kankenList[i]);
           cnt++;
         };
 
