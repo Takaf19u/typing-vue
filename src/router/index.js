@@ -20,6 +20,6 @@ export default new Router({
   mode: 'history',
   routes: [
     { path: '/', name: 'top',component: Top },
-    { path: '/typing', name: 'Main', component: Main}
+    { path: '/typing:id', name: 'Main', component: Main}
   ]
 })
