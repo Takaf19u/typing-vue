@@ -889,7 +889,6 @@ export default {
           {name: '冷土荒堆', yomi: 'れいどこうたい'},
         ]},
         { kankenJ1: [
-
           {name: '愛及屋烏', yomi: 'あいきゅうおくう'},
           {name: '哀鴻遍野', yomi: 'あいこうへんや'},
           {name: '曖昧模糊', yomi: 'あいまいもこ'},

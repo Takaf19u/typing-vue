@@ -4,7 +4,8 @@
     <div id='typingMain-contents'>
       <div id="kanji">
           <div class='yomiganaBox'>
-            <p id='yomigana'>{{yomiValue[0]}}</P>
+            <p id='title' v-show="title">ルール説明</P>
+            <p id='yomigana'></P>
           </div>
           <h1 id='subject'></h1>
           <div id='result'></div>
@@ -82,31 +83,18 @@ export default {
     '$route' (to, from) {
       clearInterval(this.countdown);
       this.reset();
-    }
+    },
   },
   methods: {
     // data初期値
     initialState() {
-      let id = this.$route.params['id'];
-      // 名前判定
-      let name = "";
-      if ( id == 1) {
-        name = "３級 " + this.kankenList.length + "問";
-      } else if (id == 2){
-        name = "準２級 " + this.kankenList.length + "問";
-      } else if (id == 3){
-        name = "２級 " + this.kankenList.length + "問";
-      } else if (id == 4){
-        name = "準１級 " + this.kankenList.length + "問";
-      } else if (id == 5){
-        name = "１級 " + this.kankenList.length + "問";
-      };
-      
       return {
-        yomiValue: [name, "？　？　？　？"],
+        name: ["","３級 ", "準２級 ", "２級 ", "準１級 ", "１級 "],
+        id: this.$route.params['id'],
+        yomiValue: ["", "？　？　？　？"],
         selectbtn: ["10","50", "全問"],
-        kankenLength: this.kankenList.length,
         formbtn: {start: true, reset: false},
+        title: true,
         timeview: false,
         judge: 3,
         state: true,
@@ -128,6 +116,22 @@ export default {
         kanken_index: 0,
       }
     },
+    getLength() {
+      let id = this.$route.params['id'];
+      // 名前判定
+      let name = "";
+      if ( id == 1) {
+        name = "３級 " + this.kankenList.length + "問";
+      } else if (id == 2){
+        name = "準２級 " + this.kankenList.length + "問";
+      } else if (id == 3){
+        name = "２級 " + this.kankenList.length + "問";
+      } else if (id == 4){
+        name = "準１級 " + this.kankenList.length + "問";
+      } else if (id == 5){
+        name = "１級 " + this.kankenList.length + "問";
+      };
+    },
     getEl() {
       this.subject = document.getElementById('subject');
       this.yomigana = document.getElementById('yomigana');
@@ -140,11 +144,11 @@ export default {
       // リセット時は`$data`にアサイン
       Object.assign(this.$data, this.initialState());
       this.getEl();
-
       this.subject.textContent = "";
       this.result.textContent = "";
-      this.fadeIn(300, this.yomigana, this.yomiValue[0], 1);
-      this.fadeIn(300, this.explanation, this.yomiValue[0], 0);
+      this.getLength();
+      this.yomigana.textContent = "";
+      this.fadeIn(300, this.explanation, "", 0);
     },
     pageReset() {
       // vue-routerのrouter.goメソッド
@@ -163,6 +167,7 @@ export default {
         this.kankenLength = 50;
       }
 
+      this.title = false;
       this.fadeOut(300, this.yomigana, 1);
       this.fadeOut(300, this.explanation, 1);
       setTimeout(this.startCountdown, 800);
@@ -172,11 +177,16 @@ export default {
     },
     startCountdown() {
      let count = 3;
+     let route = this.$router.currentRoute.path
       var begin = new Date() - 0;
         var set = setInterval(function() {
           var current = new Date() - begin;
-          this.subject.innerHTML = count;
-          if (count == 0) {
+          this.subject.textContent = count;
+
+          if (this.$router.currentRoute.path != route) {
+            clearInterval(set);
+            this.subject.textContent = "";
+          } else if (count == 0) {
             clearInterval(set);
             this.startTyping();
           }
@@ -371,7 +381,7 @@ export default {
     fadeIn(myTime, target, value, id){
       var begin = new Date() - 0;
       target.style.opacity = 0
-      if (id == 1) {target.innerHTML = value};
+      if (id == 1) {target.textContent = value};
       // フェードイン
       var inId = setInterval(function() {
         var current = new Date() - begin;
@@ -497,6 +507,11 @@ position: relative;
   height: 45px;
 }
 
+#title {
+  font-family: "nicoMoji";
+  color: gray;
+  line-height: 45px;
+}
 #yomigana {
   font-family: "nicoMoji";
   color: gray;
@@ -739,6 +754,10 @@ input[type="submit"] {
     height: 60px;
     width: 400px;
   }
+
+   #title {
+    font-size: 1.8em;
+  }
   #yomigana {
     font-size: 1.8em;
   }
@@ -768,7 +787,7 @@ input[type="submit"] {
     font-size: 6em;
   }
   #result {
-    font-size: 4em;
+    font-size: 3.8em;
   }
 }
 
@@ -842,6 +861,10 @@ input[type="submit"] {
     margin: auto;
     z-index: 4;
     height: 60px;
+  }
+
+  #title {
+    font-size: 1.4em;
   }
   #yomigana {
     font-size: 1.4em;
