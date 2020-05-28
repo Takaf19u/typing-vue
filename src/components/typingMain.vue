@@ -4,7 +4,7 @@
     <div id='typingMain-contents'>
       <div id="kanji">
           <div class='yomiganaBox'>
-            <p id='yomigana'>ルールせつめい</P>
+            <p id='yomigana'>{{yomiValue[0]}}</P>
           </div>
           <h1 id='subject'></h1>
           <div id='result'></div>
@@ -22,14 +22,18 @@
       <div class="formItems" v-if="formbtn.start">
         <div id="judge"></div>
         <div class="mainform">
-          <div id="startbtn" @click="typeCountdown()">スタート</div>
+          <div id="formbtn">
+            <div class="formbtnitm" id="50mon" @click="typeCountdown(selectbtn[0])">10問</div>
+            <div class="formbtnitm" id="50mon" @click="typeCountdown(selectbtn[1])">50問</div>
+            <div class="formbtnitm" id="zenmon" @click="typeCountdown(selectbtn[2])">全問挑戦</div>
+          </div>
         </div>
         <div id="mainExplanation"></div>
       </div>
       <div class="formItems" v-else-if="formbtn.reset">
         <div id="judge"></div>
         <div class="mainform">
-          <div id="startbtn" @click="pageReset()">再挑戦！！</div>
+          <div class="formbtnitm" id="restartbtn" @click="reset();shuffleArry()">再挑戦！！</div>
         </div>
         <div id="mainExplanation"></div>
       </div>
@@ -67,54 +71,92 @@ export default {
   name: 'typeingMain',
   props: ['kankenList'],
   data() {
-    return {
-      rnd: 0,
-      kankenLength: Number,
-      formbtn: {start: true, reset: false,},
-      timeview: false,
-      question: "？　？　？　？",
-      judge: 3,
-      viewChange: true,
-      yomi: "",
-      state: true,
-      form: null,
-      subject: null,
-      yomigana: null,
-      explanation: null,
-      result: null,
-      judgeIcon: null,
-      heartIcon: null,
-      jIcon: false,
-      jIconFalse: false,
-      rightCount: 0,
-      countdown: 0,
-      SETTIME: 20,
-      TIME: 0,
-      kanken_index: 0,
-    }
+    return this.initialState();
   },
   watch: {
     '$route' (to, from) {
-      this.pageReset();
+      clearInterval(this.countdown);
+      this.reset();
     }
   },
-  mounted:function() {
-    // this.createBubles();
-  },
   methods: {
+    // data初期値
+    initialState() {
+      let id = this.$route.params['id'];
+      // 名前判定
+      let name = "";
+      if ( id == 1) {
+        name = "３級 " + this.kankenList.length + "問";
+      } else if (id == 2){
+        name = "準２級 " + this.kankenList.length + "問";
+      } else if (id == 3){
+        name = "２級 " + this.kankenList.length + "問";
+      } else if (id == 4){
+        name = "準１級 " + this.kankenList.length + "問";
+      } else if (id == 5){
+        name = "１級 " + this.kankenList.length + "問";
+      };
+      
+      return {
+        yomiValue: [name, "？　？　？　？"],
+        selectbtn: ["10","50", "全問"],
+        kankenLength: this.kankenList.length,
+        formbtn: {start: true, reset: false},
+        timeview: false,
+        judge: 3,
+        state: true,
+        viewChange: true,
+        yomi: "",
+        form: null,
+        subject:  null,
+        yomigana: null,
+        explanation: null,
+        result: null,
+        judgeIcon: null,
+        heartIcon: null,
+        jIcon: false,
+        jIconFalse: false,
+        rightCount: 0,
+        countdown: 0,
+        SETTIME: 20,
+        TIME: 0,
+        kanken_index: 0,
+      }
+    },
+    getEl() {
+      this.subject = document.getElementById('subject');
+      this.yomigana = document.getElementById('yomigana');
+      this.explanation = document.getElementById('explanation');
+      this.judgeIcon = document.getElementById('judgeIcon');
+      this.result =  document.getElementById('result');
+    },
+	  // dataおよび画面を元の状態にもどす
+    reset() {
+      // リセット時は`$data`にアサイン
+      Object.assign(this.$data, this.initialState());
+      this.getEl();
+
+      this.subject.textContent = "";
+      this.result.textContent = "";
+      this.fadeIn(300, this.yomigana, this.yomiValue[0], 1);
+      this.fadeIn(300, this.explanation, this.yomiValue[0], 0);
+    },
     pageReset() {
       // vue-routerのrouter.goメソッド
       // currentRoute.path=>現在のページパス
       // これを渡すことで、リロード処理をしてくれる
       this.$router.go({path: this.$router.currentRoute.path, force: true})
     },
-    typeCountdown() {
-      this.subject = document.getElementById('subject');
-      this.explanation = document.getElementById('explanation');
-      this.yomigana = document.getElementById('yomigana');
-      this.result = document.getElementById('result');
-      this.judgeIcon = document.getElementById('judgeIcon');
-      this.kankenLength = this.kankenList.length;
+    typeCountdown(select) {
+      this.getEl();
+      const timer = document.getElementById('timer');
+      timer.textContent = this.SETTIME;
+
+      if(select == this.selectbtn[0]) {
+        this.kankenLength = 10;
+      } else if(select == this.selectbtn[1]) {
+        this.kankenLength = 50;
+      }
 
       this.fadeOut(300, this.yomigana, 1);
       this.fadeOut(300, this.explanation, 1);
@@ -163,8 +205,9 @@ export default {
       if (this.kankenLength == this.kanken_index) {
         this.jIconFalse = false;
         this.finish(this.rightCount);
+        return false;
       }
-      this.yomigana.textContent = this.question;
+      this.yomigana.textContent = this.yomiValue[1];
       this.yomi = this.kankenList[this.kanken_index].yomi
       subject.textContent = this.kankenList[this.kanken_index].name
       form.input.value = '';
@@ -173,7 +216,7 @@ export default {
     },
     // 入力文字をチェック
     check() {
-      if(!this.state) return;
+      if(!this.state || this.form === null) return;
 
       var begin = new Date() - 0;
       let myTime = 800;
@@ -201,22 +244,25 @@ export default {
         this.jIconFalse = true;
         // フェードアウトとアイコンの表示（ハート)
         let set = setInterval(function() {
-          let heartIcon = document.getElementById('heart' + this.judge);
-          heartIcon.style.opacity = 1;
           var current = new Date() - begin;
+          let heartIcon = document.getElementById('heart' + this.judge);
+          if (heartIcon == null) { 
+            clearInterval(set);
+            return false;
+          };
           if (current > falseTime) {
             clearInterval(set);
-            heartIcon.style.opacity = 0;
             this.TIME = this.SETTIME + 1;
             this.jIconFalse = false;
             this.judge--
             // ハートがなくなったら終了
-            if (this.judge == 0) {
+            if (this.judge <= 0) {
               this.finish(this.rightCount);
             } else {
               this.init(this.subject, this.form);
             };
           };
+          heartIcon.style.opacity = 1;
           heartIcon.style.opacity -= 0.9 * (current /falseTime);
           heartIcon.style.paddingTop = 10 * (current /falseTime) + "px";
         }.bind(this), 10);
@@ -225,15 +271,16 @@ export default {
     //処理終了の処理
     finish(rightCount) {
       clearInterval(this.countdown);
-      this.yomigana.textContent = rightCount + "問せいかい";
       this.subject.textContent = "";
 
       if(rightCount == this.kankenLength) {
-        this.yomigana.textContent = "全問せいかい!!";
-        this.result.textContent = 'パーフェクト！！';
+        this.yomigana.textContent = "全問せいかい";
+        this.result.textContent = '素晴らしい！！';
       } else if(rightCount == 0) {
+        this.yomigana.textContent = rightCount + "問せいかい";
         this.result.textContent = '努力あるのみ';
       } else {
+        this.yomigana.textContent = rightCount + "問せいかい";
         this.result.textContent = "よく頑張りました";
       }
 
@@ -312,16 +359,16 @@ export default {
         if (current > myTime) {
           clearInterval(set);
           if(h==1) {
-            this.fadeIn(300, this.yomigana);
+            this.fadeIn(300, this.yomigana, this.yomiValue[1], 1);
           }
         }
         target.style.opacity -= 0.7 * (current / myTime);
       }.bind(this), 100);
     },
-    fadeIn(myTime, target){
+    fadeIn(myTime, target, value, id){
       var begin = new Date() - 0;
       target.style.opacity = 0
-      target.innerHTML = this.question;
+      if (id == 1) {target.innerHTML = value};
       // フェードイン
       var inId = setInterval(function() {
         var current = new Date() - begin;
@@ -331,6 +378,17 @@ export default {
         target.style.opacity = 1 * (current / myTime);
       }, 100);
     },
+    // 配列の中身をシャッフルして返す
+    shuffleArry() {
+      let kanken = this.kankenList;
+      for(var i = kanken.length - 1; i > 0; i--){
+        var r = Math.floor(Math.random() * (i + 1));
+        var tmp = kanken[i];
+        kanken[i] = kanken[r];
+        kanken[r] = tmp;
+      }
+      Object.assign(this.kankenList, kanken);
+    }
   },
 };
 </script>
@@ -350,38 +408,50 @@ export default {
     position: relative;
   }
 
+  #formbtn {
+    font-size: 1.5em;
+    display: flex;
+    justify-content: center;
+  }
+
+  #restartbtn {
+    width: 150px;
+    font-size: 1.8em;
+    margin: 0 auto;
+  }
+
 /* スタートボタン */
-  #startbtn {
+.formbtnitm {
+  width: 120px;
     margin: 0 auto;
     font-family: "nicoMoji";
     position: relative;
   z-index: 2;
-  width: 200px;
   line-height: 1;
   background-color: rgb(95, 93, 93);
   border: 2px solid rgba(161, 159, 159, 0.541);
   color: #fff;
-  font-size: 1.8em;
   cursor: pointer;
   padding: 10px 0;
+  margin: 0 2px;
 }
 
-#startbtn:hover {
+.formbtnitm:hover {
   background-color: #fff;
   border-color: #59b1eb;
   color: #59b1eb;
 }
 
-  #startbtn::before,
-  #startbtn::after {
+.formbtnitm::before,
+.formbtnitm::after {
   position: absolute;
   z-index: -1;
   display: block;
   content: '';
 }
-  #startbtn,
-  #startbtn::before,
-  #startbtn::after {
+.formbtnitm,
+.formbtnitm::before,
+.formbtnitm::after {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -389,20 +459,20 @@ export default {
   transition: all .3s;
 }
 
-  #startbtn::before,
-  #startbtn::after {
+.formbtnitm::before,
+.formbtnitm::after {
   top: 0;
   width: 50%;
   height: 100%;
 }
-  #startbtn::before {
+.formbtnitm::before {
   right: 0;
 }
-  #startbtn::after {
+.formbtnitm::after {
   left: 0;
 }
-  #startbtn:hover::before,
-  #startbtn:hover::after {
+.formbtnitm:hover::before,
+.formbtnitm:hover::after {
   width: 0;
   background-color: #59b1eb;
 }
