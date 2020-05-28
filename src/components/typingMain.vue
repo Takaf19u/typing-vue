@@ -41,8 +41,9 @@
         </div>
         <form name='typing' @submit.prevent='check()' class="mainform">
           <span class="inputGroup">
-            <input name='input' type='text' autofocus  style="ime-mode:active" maxlength="10" placeholder="ひらがなで入力" />
-            <!-- <input name='btn' type='submit' value='送信' /> -->
+            <input type='text' name="dummypass" style="top: -100px; left: -100px;　position: fixed;" />
+            <input name='input' type='text' autofocus  style="ime-mode:active" maxlength="15" placeholder="ひらがなで入力"  autocomplete="off"/>
+            <input name='btn' type='submit' value='送信' />
           </span>
         </form>
         <div id="mainExplanation">▲　Press the Enter key　▲</div>
@@ -508,14 +509,6 @@ position: relative;
 	}
 }
 
-// 力技ですが、font-size: 16px; はしておきつつ、
-// transform:scale() で縮小表示すると、iOS側には「16pxですよ」と示しつつ、
-// 見た目はコンパクト、ということが実現できます。
-input[type=text] {
-  font-size: 16px;
-  transform: scale(0.8);
-}
-
 .mainform {
   background: rgba(255, 255, 255, 0.822);
   max-height: 150px;
@@ -539,16 +532,9 @@ input[type="text"] {
     background: none; 
 }
 
-/* input[type="submit"] {
-	min-width:100px;
-  font-size: 2em;
-    padding: 0;
-    border: none;
-    border: 1px solid black;
-    border-radius: 0;
-    outline: none;
-    background: white; 
-} */
+input[type="submit"] {
+  display: none;
+} 
 
 #mainExplanation {
   font-family: 'Chelsea Market', cursive;
@@ -868,11 +854,39 @@ input[type="text"] {
   color: rgba(255, 76, 45, 0.692);
 }
 
-  input[type="text"] {
+  .inputGroup {
+    display: flex;
+    padding: 0 10px 0 0px;
     margin-top: 10px;
+  }
+
+  // 力技ですが、font-size: 16px; はしておきつつ、
+  // transform:scale() で縮小表示すると、iOS側には「16pxですよ」と示しつつ、
+  // 見た目はコンパクト、ということが実現できます。
+  input[type=text] {
+    font-size: 16px;
+    transform: scale(0.9);
+  }
+
+  input[type="text"] {
+    text-align: left;
     width: 100%;
     font-size: 1.2em;
   }
+
+
+  input[type="submit"] {
+    font-family: "nicoMoji";
+    height: 30px;
+    color: gray;
+    padding: 0px 15px;
+    font-size: 0.9em;
+    border-radius: 15px;
+    display: inline-block;
+      border: 3px solid gray;;
+      outline: none;
+      background: white; 
+  } 
 
   #mainExplanation {
     font-size: 1em;
