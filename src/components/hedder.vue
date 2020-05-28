@@ -1,10 +1,12 @@
 <template>
   <div id='hedder'>
     <ul>
-      <li @click="changeId(0)"><router-link to="/">TOP</router-link></li>
-      <li @click="changeId(1)"><router-link :to="'/typing' + 1">三級</router-link></li>
-      <li @click="changeId(2)"><router-link :to="'/typing' + 2">準二級</router-link></li>
-      <li @click="changeId(3)"><router-link :to="'/typing' + 3">二級</router-link></li>
+      <li @click="setTabs(0); $emit('setKanken', 0)"><router-link to="/" v-bind:class="{ 'active': tabs[0] }">TOP</router-link></li>
+      <li @click="setTabs(1)"><router-link :to="'/typing' + 1" v-bind:class="{ 'active': tabs[1] }">三級</router-link></li>
+      <li @click="setTabs(2)"><router-link :to="'/typing' + 2" v-bind:class="{ 'active': tabs[2] }">準二級</router-link></li>
+      <li @click="setTabs(3)"><router-link :to="'/typing' + 3" v-bind:class="{ 'active': tabs[3] }">二級</router-link></li>
+      <li @click="setTabs(4)"><router-link :to="'/typing' + 4" v-bind:class="{ 'active': tabs[4] }">準一級</router-link></li>
+      <li @click="setTabs(5)"><router-link :to="'/typing' + 5" v-bind:class="{ 'active': tabs[5] }">一級</router-link></li>
     </ul>
   </div>
 </template>
@@ -15,16 +17,31 @@ export default {
   data () {
     return {
       componentId: 0,
+      tabs: [false, false, false, false, false, false],
     }
   },
-  watch: {
-    componentId: function () {
-      this.$emit('receiveComponentId', this.componentId);
-    },
+  created: function(){
+    let path = this.$router.currentRoute.path;
+    let id = Number;
+    // ページごとの処理
+    if ( path == "/") {
+      id  = 0;
+    } else {
+      // タイピングページのIdを格納
+      id  = this.$route.params['id'];
+    };
+
+    this.setTabs(id)
   },
   methods: {
-    changeId(id) {
-      this.componentId = id;
+    setTabs(id) {
+      for (let i = 0; i < this.tabs.length; i++) {
+        if( i == id) {
+          this.tabs.splice(i, 1, true);
+        } else if(this.tabs[i] === true) {
+          this.tabs.splice(i, 1, false);
+        }
+      }
     },
   },
 };
@@ -63,6 +80,10 @@ li {
 a {
   color: white;
   text-decoration: none;
+}
+
+.active {
+  color: gold;
 }
 
 </style>
