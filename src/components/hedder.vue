@@ -186,6 +186,7 @@ a {
     z-index: 9999;
     width: 30%;
     max-width: 200px;
+    min-width: 150px;
     height: 100%;
     background: rgba(119, 118, 118, 0.637);
     transition: .3s ease-in-out;

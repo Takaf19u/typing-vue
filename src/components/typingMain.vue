@@ -73,6 +73,11 @@ export default {
   data() {
     return this.initialState();
   },
+  mounted: function(){
+    if(this.$router.currentRoute.path != "/" ){
+      this.createBubles();
+    };
+  },
   watch: {
     '$route' (to, from) {
       clearInterval(this.countdown);
@@ -300,11 +305,9 @@ export default {
   
       // Push the header width values to bArray
       for (var i = 0; i < bubles.clientWidth; i++) {
-          bArray.push(i);
+        bArray.push(i);
       }
- 
       // setInterval function used to create new bubble every 350 milliseconds
-      
       let bubleId = setInterval(function(){
           var size = this.randomValue(sArray);
           var begin = new Date() - 0;
@@ -322,7 +325,7 @@ export default {
           }
 
           // typing以外のページに遷移した場合、処理をとめる
-          if (this.$route.path !== '/typing') {
+          if (this.$route.path.indexOf('typing') === -1) {
             clearInterval(bubleId);
           }
 
