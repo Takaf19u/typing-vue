@@ -4,8 +4,7 @@
     <div id='typingMain-contents'>
       <div id="kanji">
           <div class='yomiganaBox'>
-            <p id='title' v-show="title">ルール説明</P>
-            <p id='yomigana'></P>
+            <p id='yomigana'>{{yomiValue[0]}}</P>
           </div>
           <h1 id='subject'></h1>
           <div id='result'></div>
@@ -70,7 +69,7 @@
 <script>
 export default {
   name: 'typeingMain',
-  props: ['kankenList'],
+  props: ['kankenlist'],
   data() {
     return this.initialState();
   },
@@ -88,13 +87,12 @@ export default {
   methods: {
     // data初期値
     initialState() {
+
       return {
-        name: ["","３級 ", "準２級 ", "２級 ", "準１級 ", "１級 "],
         id: this.$route.params['id'],
-        yomiValue: ["", "？　？　？　？"],
+        yomiValue: [this.getLength(), "？　？　？　？"],
         selectbtn: ["10","50", "全問"],
         formbtn: {start: true, reset: false},
-        title: true,
         timeview: false,
         judge: 3,
         state: true,
@@ -121,16 +119,17 @@ export default {
       // 名前判定
       let name = "";
       if ( id == 1) {
-        name = "３級 " + this.kankenList.length + "問";
+        name = "３級 " + this.kankenlist.length + "問";
       } else if (id == 2){
-        name = "準２級 " + this.kankenList.length + "問";
+        name = "準２級 " + this.kankenlist.length + "問";
       } else if (id == 3){
-        name = "２級 " + this.kankenList.length + "問";
+        name = "２級 " + this.kankenlist.length + "問";
       } else if (id == 4){
-        name = "準１級 " + this.kankenList.length + "問";
+        name = "準１級 " + this.kankenlist.length + "問";
       } else if (id == 5){
-        name = "１級 " + this.kankenList.length + "問";
+        name = "１級 " + this.kankenlist.length + "問";
       };
+      return name;
     },
     getEl() {
       this.subject = document.getElementById('subject');
@@ -146,8 +145,8 @@ export default {
       this.getEl();
       this.subject.textContent = "";
       this.result.textContent = "";
-      this.getLength();
-      this.yomigana.textContent = "";
+
+      this.fadeIn(300, this.yomigana, this.yomiValue[0], 1);
       this.fadeIn(300, this.explanation, "", 0);
     },
     pageReset() {
@@ -223,8 +222,8 @@ export default {
         return false;
       }
       this.yomigana.textContent = this.yomiValue[1];
-      this.yomi = this.kankenList[this.kanken_index].yomi
-      subject.textContent = this.kankenList[this.kanken_index].name
+      this.yomi = this.kankenlist[this.kanken_index].yomi
+      subject.textContent = this.kankenlist[this.kanken_index].name
       form.input.value = '';
       this.kanken_index++
       form.input.focus();
@@ -393,14 +392,14 @@ export default {
     },
     // 配列の中身をシャッフルして返す
     shuffleArry() {
-      let kanken = this.kankenList;
+      let kanken = this.kankenlist;
       for(var i = kanken.length - 1; i > 0; i--){
         var r = Math.floor(Math.random() * (i + 1));
         var tmp = kanken[i];
         kanken[i] = kanken[r];
         kanken[r] = tmp;
       }
-      Object.assign(this.kankenList, kanken);
+      Object.assign(this.kankenlist, kanken);
     }
   },
 };
@@ -507,11 +506,6 @@ position: relative;
   height: 45px;
 }
 
-#title {
-  font-family: "nicoMoji";
-  color: gray;
-  line-height: 45px;
-}
 #yomigana {
   font-family: "nicoMoji";
   color: gray;
@@ -755,9 +749,6 @@ input[type="submit"] {
     width: 400px;
   }
 
-   #title {
-    font-size: 1.8em;
-  }
   #yomigana {
     font-size: 1.8em;
   }

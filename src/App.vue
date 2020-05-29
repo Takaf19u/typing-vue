@@ -3,7 +3,7 @@
     <hedderitem @setKanken="setData" />
     <div id="main">
       <transition mode="out-in" name="fade">
-        <router-view :kankenList="kanjiList" @setKanken="setData" />
+        <router-view :kankenlist="kanjiList" @setKanken="setData" />
       </transition>
     </div>
     <div id="footer">
@@ -2896,7 +2896,7 @@ export default {
   watch: {
     '$route' (to, from) {
       let id = Number;
-      id = this.setId(to);
+      id = this.setId(to.fullPath);
       this.setData(id);
     }
   },
@@ -2935,10 +2935,10 @@ export default {
         target = this.kankens[4].kanken1;
       };
 
-
       // 値をshuffle
       target = this.shuffleArry(target);
       // Object.assignで参照をコピーではなく、値をコピーする。
+      this.kanjiList.splice(-this.kanjiList.length);
       Object.assign(this.kanjiList, target);
     },
     // 配列の中身をシャッフルして返す
