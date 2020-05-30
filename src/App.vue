@@ -2938,8 +2938,8 @@ export default {
       // 値をshuffle
       target = this.shuffleArry(target);
       // Object.assignで参照をコピーではなく、値をコピーする。
-      this.kanjiList.splice(-this.kanjiList.length);
-      Object.assign(this.kanjiList, target);
+      this.kanjiList = target.slice()
+      // Object.assign(this.kanjiList, target);
     },
     // 配列の中身をシャッフルして返す
     shuffleArry(kanken) {
